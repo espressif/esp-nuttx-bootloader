@@ -11,5 +11,5 @@ for target in ${targets}; do
     idf.py bootloader partition_table
     cp build/bootloader/bootloader.bin out/bootloader-${target}.bin
     cp build/partition_table/partition-table.bin out/partition-table-${target}.bin
-    cp sdkconfig out/sdkconfig
+    cp sdkconfig out/sdkconfig-${target}
 done
