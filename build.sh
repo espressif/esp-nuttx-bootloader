@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-targets="esp32 esp32s2 esp32c3"
+targets="esp32 esp32c3"
 
 mkdir -p out
 
