@@ -1,2 +1,6 @@
+# Use the partition table from this repository
 CONFIG_PARTITION_TABLE_CUSTOM=y
 CONFIG_PARTITION_TABLE_CUSTOM_FILENAME="partitions.csv"
+
+# NuttX doesn't disable the RTC watchdog on startup, so don't enable it
+CONFIG_BOOTLOADER_WDT_ENABLE=n
