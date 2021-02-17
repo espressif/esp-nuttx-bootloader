@@ -1,0 +1,22 @@
+name: 'build'
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    steps: 
+      - uses: actions/checkout@v1
+      - name: Build bootloader and partition table
+        uses: docker://docker.io/espressif/idf:release-v4.3
+        with:
+          args: ./build.sh
+      - name: Update release
+        if: "github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')"
+        uses: eine/tip@master
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          files: |
+            out/*
+          tag: latest
+          rm: true
