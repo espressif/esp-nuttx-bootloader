@@ -10,7 +10,8 @@ jobs:
       - name: Build bootloader and partition table
         uses: docker://docker.io/espressif/idf:release-v4.3
         with:
-          args: ./build.sh
+          args: /bin/sh -c "./build.sh -m DIO && ./build.sh -m DOUT"
+
       - name: Update release
         if: "github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')"
         uses: eine/tip@master
