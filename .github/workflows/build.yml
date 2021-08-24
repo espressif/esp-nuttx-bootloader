@@ -10,7 +10,7 @@ jobs:
       - name: Build IDF bootloader and partition table
         uses: docker://docker.io/espressif/idf:release-v4.3
         with:
-          args: ./build.sh
+          args: ./build_idfboot.sh
       - name: Build MCUboot bootloader
         uses: docker://docker.io/espressif/idf:release-v4.3
         with:
