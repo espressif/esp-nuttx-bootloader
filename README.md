@@ -45,7 +45,7 @@ It is recommended to build the binaries inside the `espressif/idf` Docker image.
 ```bash
 git clone https://github.com/espressif/esp-nuttx-bootloader.git
 cd esp-nuttx-bootloader
-docker run --rm -v $PWD:/work -w /work espressif/idf:release-v4.3 ./build.sh
+docker run --rm -v $PWD:/work -w /work espressif/idf:release-v4.3 ./build_idfboot.sh
 ```
 
 The binaries will be inside `out` directory.
