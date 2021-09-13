@@ -1,26 +1,59 @@
 name: 'build'
 
-on: [push, pull_request]
+on:
+  pull_request:
+  push:
+    branches:
+      - main
 
 jobs:
-  build:
+  IDFboot:
     runs-on: ubuntu-20.04
-    steps: 
-      - uses: actions/checkout@v1
+    strategy:
+      matrix:
+        targets: [esp32, esp32s2, esp32c3]
+    steps:
+      - uses: actions/checkout@v2
       - name: Build IDF bootloader and partition table
         uses: docker://docker.io/espressif/idf:release-v4.3
         with:
-          args: ./build_idfboot.sh
+          args: ./build_idfboot.sh -c ${{matrix.targets}}
+      - uses: actions/upload-artifact@v2
+        with:
+          name: idf-builds
+          path: out/
+
+  MCUboot:
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        targets: [esp32]
+    steps:
+      - uses: actions/checkout@v2
       - name: Build MCUboot bootloader
         uses: docker://docker.io/espressif/idf:release-v4.3
         with:
-          args: ./build_mcuboot.sh
+          args: ./build_mcuboot.sh -s -c ${{matrix.targets}}
+      - uses: actions/upload-artifact@v2
+        with:
+          name: mcuboot-builds
+          path: out/
+
+  Release-Artifacts:
+    runs-on: ubuntu-20.04
+    needs: [IDFboot, MCUboot]
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+        with:
+          path: buildartifacts/
       - name: Update release
         if: "github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')"
         uses: eine/tip@master
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           files: |
-            out/*
+            buildartifacts/idf-builds/*
+            buildartifacts/mcuboot-builds/*
           tag: latest
           rm: true
