@@ -38,14 +38,21 @@ Scratch slot size | 0x40000 (256 KiB)
 
 # Building locally
 
+Clone this repository and change to the newly created directory:
+
+```bash
+git clone https://github.com/espressif/esp-nuttx-bootloader.git
+cd esp-nuttx-bootloader
+```
+
+Next, follow the instructions according to the bootloader choice.
+
 ## IDF bootloader
 
 It is recommended to build the binaries inside the `espressif/idf` Docker image.
 
 ```bash
-git clone https://github.com/espressif/esp-nuttx-bootloader.git
-cd esp-nuttx-bootloader
-docker run --rm -v $PWD:/work -w /work espressif/idf:release-v4.3 ./build_idfboot.sh
+docker run --rm -v $PWD:/work -w /work espressif/idf:release-v4.3 ./build_idfboot.sh -c <chip>
 ```
 
 The binaries will be inside `out` directory.
@@ -63,12 +70,18 @@ For more information about these files, refer to the following chapters of IDF P
 
 ## MCUboot bootloader
 
+First of all, make sure the MCUboot repository and its dependencies are up-to-date:
+
+```bash
+git submodule update --init mcuboot
+cd mcuboot
+git submodule update --init --recursive ext/mbedtls
+```
+
 It is recommended to build the binaries inside the `espressif/idf` Docker image.
 
 ```bash
-git clone https://github.com/espressif/esp-nuttx-bootloader.git
-cd esp-nuttx-bootloader
-docker run --rm -v $PWD:/work -w /work espressif/idf:release-v4.3 ./build_mcuboot.sh
+docker run --rm -v $PWD:/work -w /work espressif/idf:release-v4.3 ./build_mcuboot.sh -c <chip>
 ```
 
 The binaries will be inside `out` directory.
