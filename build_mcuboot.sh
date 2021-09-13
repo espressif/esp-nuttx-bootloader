@@ -5,25 +5,109 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
-set -euo pipefail
+SCRIPT_ROOTDIR=$(dirname "$(realpath "${BASH_SOURCE[0]}")")
+SCRIPT_NAME=$(basename "${BASH_SOURCE[0]}")
+MCUBOOT_ROOTDIR=$(realpath "${MCUBOOT_ROOTDIR:-${SCRIPT_ROOTDIR}/mcuboot}")
+IDF_PATH="${IDF_PATH:-${MCUBOOT_ROOTDIR}/boot/espressif/hal/esp-idf}"
 
-targets="esp32"
-mcuboot_config="${PWD}/mcuboot.conf"
-output_dir="${PWD}/out"
+set -eo pipefail
 
-mkdir -p "${output_dir}"
+supported_targets=("esp32")
 
-git submodule update --init mcuboot
-pushd mcuboot &>/dev/null
+usage() {
+    echo ""
+    echo "USAGE: ${SCRIPT_NAME} [-h] [-s] -c <chip>"
+    echo ""
+    echo "Where:"
+    echo "  -c <chip> Target chip (options: ${supported_targets[*]})"
+    echo "  -s Setup environment"
+    echo "  -h Show usage and terminate"
+    echo ""
+}
 
-git submodule update --init --recursive ext/mbedtls
-cd boot/espressif
+setup() {
+    # Update MCUboot repository
 
-for target in ${targets}; do
-    cmake -DCMAKE_TOOLCHAIN_FILE=tools/toolchain-"${target}".cmake -DMCUBOOT_TARGET="${target}" -DMCUBOOT_CONFIG_FILE="${mcuboot_config}" -DIDF_PATH="${IDF_PATH}" -B build -GNinja
-    cmake --build build/
-    "${IDF_PATH}"/components/esptool_py/esptool/esptool.py --chip "${target}" elf2image --flash_mode dio --flash_freq 40m -o build/mcuboot-"${target}".bin build/mcuboot_"${target}".elf
-    cp build/mcuboot-"${target}".bin "${output_dir}"/mcuboot-"${target}".bin
+    git -C "${SCRIPT_ROOTDIR}" submodule update --init mcuboot
+
+    # Update MCUboot dependencies
+
+    git -C "${MCUBOOT_ROOTDIR}" submodule update --init --recursive ext/mbedtls
+
+    if [ "${IDF_PATH}" == "${MCUBOOT_ROOTDIR}/boot/espressif/hal/esp-idf" ]; then
+        # Not using --recursive since MCUboot only requires the bootloader_support component from IDF
+
+        git -C "${MCUBOOT_ROOTDIR}" submodule update --init --checkout boot/espressif/hal/esp-idf
+    fi
+}
+
+build_mcuboot() {
+    local target=${1}
+    local build_dir=".build-${target}"
+    local source_dir="boot/espressif"
+    local output_dir="${SCRIPT_ROOTDIR}/out"
+    local toolchain_file="tools/toolchain-${target}.cmake"
+    local mcuboot_config
+    mcuboot_config="${SCRIPT_ROOTDIR}/mcuboot.conf"
+
+    pushd "${SCRIPT_ROOTDIR}" &>/dev/null
+    mkdir -p "${output_dir}" &>/dev/null
+
+    # Build bootloader for selected target
+
+    cd "${MCUBOOT_ROOTDIR}" &>/dev/null
+    cmake -DCMAKE_TOOLCHAIN_FILE="${toolchain_file}"  \
+          -DMCUBOOT_TARGET="${target}"                \
+          -DMCUBOOT_CONFIG_FILE="${mcuboot_config}"   \
+          -DIDF_PATH="${IDF_PATH}"                    \
+          -B "${build_dir}"                           \
+          -GNinja                                     \
+          "${source_dir}"
+    cmake --build "${build_dir}"/
+    esptool.py --chip "${target}" elf2image --flash_mode dio --flash_freq 40m \
+          -o "${build_dir}"/mcuboot-"${target}".bin                           \
+          "${build_dir}"/mcuboot_"${target}".elf
+
+    # Copy bootloader binary file to output directory
+
+    cp "${build_dir}"/mcuboot-"${target}".bin "${output_dir}"/mcuboot-"${target}".bin &>/dev/null
+
+    # Remove build directory
+
+    rm -rf "${build_dir}" &>/dev/null
+
+    popd &>/dev/null
+}
+
+while getopts ":hc:s" arg; do
+  case "${arg}" in
+    c)
+      chip=${OPTARG}
+      ;;
+    s)
+      setup
+      ;;
+    h)
+      usage
+      exit 0
+      ;;
+    *)
+      usage
+      exit 1
+      ;;
+  esac
 done
 
-popd &>/dev/null
+if [ -z "${chip}" ]; then
+    printf "ERROR: Missing target chip.\n"
+    usage
+    exit 1
+fi
+
+if [[ ! "${supported_targets[*]}" =~ "${chip}" ]]; then
+    printf "ERROR: Target \"%s\" is not supported!\n" "${chip}"
+    usage
+    exit 1
+fi
+
+build_mcuboot "${chip}"
