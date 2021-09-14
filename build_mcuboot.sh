@@ -15,70 +15,70 @@ set -eo pipefail
 supported_targets=("esp32")
 
 usage() {
-    echo ""
-    echo "USAGE: ${SCRIPT_NAME} [-h] [-s] -c <chip>"
-    echo ""
-    echo "Where:"
-    echo "  -c <chip> Target chip (options: ${supported_targets[*]})"
-    echo "  -f <file> Path to file containing configuration options"
-    echo "  -s Setup environment"
-    echo "  -h Show usage and terminate"
-    echo ""
+  echo ""
+  echo "USAGE: ${SCRIPT_NAME} [-h] [-s] -c <chip>"
+  echo ""
+  echo "Where:"
+  echo "  -c <chip> Target chip (options: ${supported_targets[*]})"
+  echo "  -f <file> Path to file containing configuration options"
+  echo "  -s Setup environment"
+  echo "  -h Show usage and terminate"
+  echo ""
 }
 
 setup() {
-    # Update MCUboot repository
+  # Update MCUboot repository
 
-    git -C "${SCRIPT_ROOTDIR}" submodule update --init mcuboot
+  git -C "${SCRIPT_ROOTDIR}" submodule update --init mcuboot
 
-    # Update MCUboot dependencies
+  # Update MCUboot dependencies
 
-    git -C "${MCUBOOT_ROOTDIR}" submodule update --init --recursive ext/mbedtls
+  git -C "${MCUBOOT_ROOTDIR}" submodule update --init --recursive ext/mbedtls
 
-    if [ "${IDF_PATH}" == "${MCUBOOT_ROOTDIR}/boot/espressif/hal/esp-idf" ]; then
-        # Not using --recursive since MCUboot only requires the bootloader_support component from IDF
+  if [ "${IDF_PATH}" == "${MCUBOOT_ROOTDIR}/boot/espressif/hal/esp-idf" ]; then
+    # Not using --recursive since MCUboot only requires the bootloader_support component from IDF
 
-        git -C "${MCUBOOT_ROOTDIR}" submodule update --init --checkout boot/espressif/hal/esp-idf
-    fi
+    git -C "${MCUBOOT_ROOTDIR}" submodule update --init --checkout boot/espressif/hal/esp-idf
+  fi
 }
 
 build_mcuboot() {
-    local target=${1}
-    local config=${2}
-    local build_dir=".build-${target}"
-    local source_dir="boot/espressif"
-    local output_dir="${SCRIPT_ROOTDIR}/out"
-    local toolchain_file="tools/toolchain-${target}.cmake"
-    local mcuboot_config
-    mcuboot_config=$(realpath "${config:-${SCRIPT_ROOTDIR}/mcuboot.conf}")
+  local target=${1}
+  local config=${2}
+  local build_dir=".build-${target}"
+  local source_dir="boot/espressif"
+  local output_dir="${SCRIPT_ROOTDIR}/out"
+  local toolchain_file="tools/toolchain-${target}.cmake"
+  local mcuboot_config
+  mcuboot_config=$(realpath "${config:-${SCRIPT_ROOTDIR}/mcuboot.conf}")
 
-    pushd "${SCRIPT_ROOTDIR}" &>/dev/null
-    mkdir -p "${output_dir}" &>/dev/null
+  pushd "${SCRIPT_ROOTDIR}" &>/dev/null
+  mkdir -p "${output_dir}" &>/dev/null
 
-    # Build bootloader for selected target
+  # Build bootloader for selected target
 
-    cd "${MCUBOOT_ROOTDIR}" &>/dev/null
-    cmake -DCMAKE_TOOLCHAIN_FILE="${toolchain_file}"  \
-          -DMCUBOOT_TARGET="${target}"                \
-          -DMCUBOOT_CONFIG_FILE="${mcuboot_config}"   \
-          -DIDF_PATH="${IDF_PATH}"                    \
-          -B "${build_dir}"                           \
-          -GNinja                                     \
-          "${source_dir}"
-    cmake --build "${build_dir}"/
-    esptool.py --chip "${target}" elf2image --flash_mode dio --flash_freq 40m \
-          -o "${build_dir}"/mcuboot-"${target}".bin                           \
-          "${build_dir}"/mcuboot_"${target}".elf
+  cd "${MCUBOOT_ROOTDIR}" &>/dev/null
+  cmake -DCMAKE_TOOLCHAIN_FILE="${toolchain_file}"  \
+        -DMCUBOOT_TARGET="${target}"                \
+        -DMCUBOOT_CONFIG_FILE="${mcuboot_config}"   \
+        -DIDF_PATH="${IDF_PATH}"                    \
+        -B "${build_dir}"                           \
+        -GNinja                                     \
+        "${source_dir}"
+  cmake --build "${build_dir}"/
+  esptool.py --chip "${target}" elf2image --flash_mode dio --flash_freq 40m \
+        -o "${build_dir}"/mcuboot-"${target}".bin                           \
+        "${build_dir}"/mcuboot_"${target}".elf
 
-    # Copy bootloader binary file to output directory
+  # Copy bootloader binary file to output directory
 
-    cp "${build_dir}"/mcuboot-"${target}".bin "${output_dir}"/mcuboot-"${target}".bin &>/dev/null
+  cp "${build_dir}"/mcuboot-"${target}".bin "${output_dir}"/mcuboot-"${target}".bin &>/dev/null
 
-    # Remove build directory
+  # Remove build directory
 
-    rm -rf "${build_dir}" &>/dev/null
+  rm -rf "${build_dir}" &>/dev/null
 
-    popd &>/dev/null
+  popd &>/dev/null
 }
 
 while getopts ":hc:f:s" arg; do
@@ -104,21 +104,21 @@ while getopts ":hc:f:s" arg; do
 done
 
 if [ -z "${chip}" ]; then
-    printf "ERROR: Missing target chip.\n"
-    usage
-    exit 1
+  printf "ERROR: Missing target chip.\n"
+  usage
+  exit 1
 fi
 
 if [ -n "${config}" ] && [ ! -f "${config}" ]; then
-    printf "ERROR: Configuration file %s not found.\n" "${config}"
-    usage
-    exit 1
+  printf "ERROR: Configuration file %s not found.\n" "${config}"
+  usage
+  exit 1
 fi
 
 if [[ ! "${supported_targets[*]}" =~ "${chip}" ]]; then
-    printf "ERROR: Target \"%s\" is not supported!\n" "${chip}"
-    usage
-    exit 1
+  printf "ERROR: Target \"%s\" is not supported!\n" "${chip}"
+  usage
+  exit 1
 fi
 
 build_mcuboot "${chip}" "${config}"
