@@ -20,6 +20,7 @@ usage() {
     echo ""
     echo "Where:"
     echo "  -c <chip> Target chip (options: ${supported_targets[*]})"
+    echo "  -f <file> Path to file containing configuration options"
     echo "  -s Setup environment"
     echo "  -h Show usage and terminate"
     echo ""
@@ -43,12 +44,13 @@ setup() {
 
 build_mcuboot() {
     local target=${1}
+    local config=${2}
     local build_dir=".build-${target}"
     local source_dir="boot/espressif"
     local output_dir="${SCRIPT_ROOTDIR}/out"
     local toolchain_file="tools/toolchain-${target}.cmake"
     local mcuboot_config
-    mcuboot_config="${SCRIPT_ROOTDIR}/mcuboot.conf"
+    mcuboot_config=$(realpath "${config:-${SCRIPT_ROOTDIR}/mcuboot.conf}")
 
     pushd "${SCRIPT_ROOTDIR}" &>/dev/null
     mkdir -p "${output_dir}" &>/dev/null
@@ -79,10 +81,13 @@ build_mcuboot() {
     popd &>/dev/null
 }
 
-while getopts ":hc:s" arg; do
+while getopts ":hc:f:s" arg; do
   case "${arg}" in
     c)
       chip=${OPTARG}
+      ;;
+    f)
+      config=${OPTARG}
       ;;
     s)
       setup
@@ -104,10 +109,16 @@ if [ -z "${chip}" ]; then
     exit 1
 fi
 
+if [ -n "${config}" ] && [ ! -f "${config}" ]; then
+    printf "ERROR: Configuration file %s not found.\n" "${config}"
+    usage
+    exit 1
+fi
+
 if [[ ! "${supported_targets[*]}" =~ "${chip}" ]]; then
     printf "ERROR: Target \"%s\" is not supported!\n" "${chip}"
     usage
     exit 1
 fi
 
-build_mcuboot "${chip}"
+build_mcuboot "${chip}" "${config}"
