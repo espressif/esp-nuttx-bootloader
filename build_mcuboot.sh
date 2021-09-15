@@ -50,10 +50,18 @@ build_mcuboot() {
   local output_dir="${SCRIPT_ROOTDIR}/out"
   local toolchain_file="tools/toolchain-${target}.cmake"
   local mcuboot_config
+  local make_generator
+
   mcuboot_config=$(realpath "${config:-${SCRIPT_ROOTDIR}/mcuboot.conf}")
 
   pushd "${SCRIPT_ROOTDIR}" &>/dev/null
   mkdir -p "${output_dir}" &>/dev/null
+
+  # Build with Ninja if installed
+
+  if command -v ninja &>/dev/null; then
+    make_generator="-GNinja"
+  fi
 
   # Build bootloader for selected target
 
@@ -63,7 +71,7 @@ build_mcuboot() {
         -DMCUBOOT_CONFIG_FILE="${mcuboot_config}"   \
         -DIDF_PATH="${IDF_PATH}"                    \
         -B "${build_dir}"                           \
-        -GNinja                                     \
+        "${make_generator}"                         \
         "${source_dir}"
   cmake --build "${build_dir}"/
   esptool.py --chip "${target}" elf2image --flash_mode dio --flash_freq 40m \
