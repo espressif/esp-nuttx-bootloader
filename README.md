@@ -52,7 +52,7 @@ Next, follow the instructions according to the bootloader choice.
 It is recommended to build the binaries inside the `espressif/idf` Docker image.
 
 ```bash
-docker run --rm -v $PWD:/work -w /work espressif/idf:release-v4.3 ./build_idfboot.sh -c <chip>
+docker run --rm --user $(id -u):$(id -g) -v $PWD:/work -w /work espressif/idf:release-v4.3 ./build_idfboot.sh -c <chip>
 ```
 
 The binaries will be inside `out` directory.
@@ -81,7 +81,7 @@ git submodule update --init --recursive ext/mbedtls
 It is recommended to build the binaries inside the `espressif/idf` Docker image.
 
 ```bash
-docker run --rm -v $PWD:/work -w /work espressif/idf:release-v4.3 ./build_mcuboot.sh -c <chip>
+docker run --rm --user $(id -u):$(id -g) -v $PWD:/work -w /work espressif/idf:release-v4.3 ./build_mcuboot.sh -c <chip>
 ```
 
 The binaries will be inside `out` directory.
