@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        targets: [esp32]
+        targets: [esp32, esp32s2, esp32c3]
     steps:
       - uses: actions/checkout@v2
       - name: Build MCUboot bootloader

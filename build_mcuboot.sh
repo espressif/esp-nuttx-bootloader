@@ -12,7 +12,7 @@ IDF_PATH="${IDF_PATH:-${MCUBOOT_ROOTDIR}/boot/espressif/hal/esp-idf}"
 
 set -eo pipefail
 
-supported_targets=("esp32")
+supported_targets=("esp32" "esp32s2" "esp32c3")
 
 usage() {
   echo ""
