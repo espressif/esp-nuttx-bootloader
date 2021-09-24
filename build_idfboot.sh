@@ -15,12 +15,12 @@ supported_targets=("esp32" "esp32s2" "esp32c3")
 
 usage() {
   echo ""
-  echo "USAGE: ${SCRIPT_NAME} [-h] -c <chip>"
+  echo "USAGE: ${SCRIPT_NAME} [-h] [-s] -c <chip> -f <config> -p <partinfo>"
   echo ""
   echo "Where:"
   echo "  -c <chip> Target chip (options: ${supported_targets[*]})"
-  echo "  -f <file> Path to file containing bootloader configuration options"
-  echo "  -p <file> Path to file containing partition table information"
+  echo "  -f <config> Path to file containing bootloader configuration options"
+  echo "  -p <partinfo> Path to file containing partition table information"
   echo "  -s Setup environment"
   echo "  -h Show usage and terminate"
   echo ""

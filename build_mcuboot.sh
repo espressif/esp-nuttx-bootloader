@@ -16,11 +16,11 @@ supported_targets=("esp32" "esp32s2" "esp32c3")
 
 usage() {
   echo ""
-  echo "USAGE: ${SCRIPT_NAME} [-h] [-s] -c <chip>"
+  echo "USAGE: ${SCRIPT_NAME} [-h] [-s] -c <chip> -f <config>"
   echo ""
   echo "Where:"
   echo "  -c <chip> Target chip (options: ${supported_targets[*]})"
-  echo "  -f <file> Path to file containing configuration options"
+  echo "  -f <config> Path to file containing configuration options"
   echo "  -s Setup environment"
   echo "  -h Show usage and terminate"
   echo ""
