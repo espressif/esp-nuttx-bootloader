@@ -130,7 +130,7 @@ if [ -n "${partinfo}" ] && [ ! -f "${partinfo}" ]; then
   exit 1
 fi
 
-if [[ ! "${supported_targets[*]}" =~ "${chip}" ]]; then
+if [[ ! "${supported_targets[*]}" =~ ${chip} ]]; then
   printf "ERROR: Target \"%s\" is not supported!\n" "${chip}"
   usage
   exit 1
