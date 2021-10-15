@@ -50,9 +50,30 @@ build_mcuboot() {
   local output_dir="${SCRIPT_ROOTDIR}/out"
   local toolchain_file="tools/toolchain-${target}.cmake"
   local mcuboot_config
+  local mcuboot_flashsize
+  local mcuboot_flashmode
+  local mcuboot_flashfreq
   local make_generator
 
   mcuboot_config=$(realpath "${config:-${SCRIPT_ROOTDIR}/mcuboot.conf}")
+
+  # Try parsing Flash parameters from the mcuboot config file.
+  # If not found, let's assume some commonplace values.
+
+  mcuboot_flashsize=$(sed -n 's/^CONFIG_ESPTOOLPY_FLASHSIZE_\(.*\)MB=y/\1MB/p' "${mcuboot_config}")
+  if [ -z "${mcuboot_flashsize}" ]; then
+    mcuboot_flashsize="4MB"
+  fi
+
+  mcuboot_flashmode=$(sed -n 's/^CONFIG_ESPTOOLPY_FLASHMODE_\(.*\)=y/\L\1/p' "${mcuboot_config}")
+  if [ -z "${mcuboot_flashmode}" ]; then
+    mcuboot_flashmode="dio"
+  fi
+
+  mcuboot_flashfreq=$(sed -n 's/^CONFIG_ESPTOOLPY_FLASHFREQ_\(.*\)M=y/\1m/p' "${mcuboot_config}")
+  if [ -z "${mcuboot_flashfreq}" ]; then
+    mcuboot_flashfreq="40m"
+  fi
 
   pushd "${SCRIPT_ROOTDIR}" &>/dev/null
   mkdir -p "${output_dir}" &>/dev/null
@@ -74,8 +95,11 @@ build_mcuboot() {
         "${make_generator}"                         \
         "${source_dir}"
   cmake --build "${build_dir}"/
-  esptool.py --chip "${target}" elf2image --flash_mode dio --flash_freq 40m \
-        -o "${build_dir}"/mcuboot-"${target}".bin                           \
+  esptool.py --chip "${target}" elf2image           \
+        --flash_size "${mcuboot_flashsize}"         \
+        --flash_mode "${mcuboot_flashmode}"         \
+        --flash_freq "${mcuboot_flashfreq}"         \
+        -o "${build_dir}"/mcuboot-"${target}".bin   \
         "${build_dir}"/mcuboot_"${target}".elf
 
   # Copy bootloader binary file to output directory
