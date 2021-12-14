@@ -60,17 +60,17 @@ build_mcuboot() {
   # Try parsing Flash parameters from the mcuboot config file.
   # If not found, let's assume some commonplace values.
 
-  mcuboot_flashsize=$(sed -n 's/^CONFIG_ESPTOOLPY_FLASHSIZE_\(.*\)MB=y/\1MB/p' "${mcuboot_config}")
+  mcuboot_flashsize=$(sed -n 's/^CONFIG_ESPTOOLPY_FLASHSIZE_\(.*\)MB=1/\1MB/p' "${mcuboot_config}")
   if [ -z "${mcuboot_flashsize}" ]; then
     mcuboot_flashsize="4MB"
   fi
 
-  mcuboot_flashmode=$(sed -n 's/^CONFIG_ESPTOOLPY_FLASHMODE_\(.*\)=y/\L\1/p' "${mcuboot_config}")
+  mcuboot_flashmode=$(sed -n 's/^CONFIG_ESPTOOLPY_FLASHMODE_\(.*\)=1/\L\1/p' "${mcuboot_config}")
   if [ -z "${mcuboot_flashmode}" ]; then
     mcuboot_flashmode="dio"
   fi
 
-  mcuboot_flashfreq=$(sed -n 's/^CONFIG_ESPTOOLPY_FLASHFREQ_\(.*\)M=y/\1m/p' "${mcuboot_config}")
+  mcuboot_flashfreq=$(sed -n 's/^CONFIG_ESPTOOLPY_FLASHFREQ_\(.*\)M=1/\1m/p' "${mcuboot_config}")
   if [ -z "${mcuboot_flashfreq}" ]; then
     mcuboot_flashfreq="40m"
   fi
