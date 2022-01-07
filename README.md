@@ -18,6 +18,7 @@ Chip | Bootloader | Partition table
 -----|------------|-----------------
 ESP32 | [bootloader-esp32.bin](https://github.com/espressif/esp-nuttx-bootloader/releases/download/latest/bootloader-esp32.bin) | [partition-table-esp32.bin](https://github.com/espressif/esp-nuttx-bootloader/releases/download/latest/partition-table-esp32.bin)
 ESP32-S2 | [bootloader-esp32s2.bin](https://github.com/espressif/esp-nuttx-bootloader/releases/download/latest/bootloader-esp32s2.bin) | [partition-table-esp32s2.bin](https://github.com/espressif/esp-nuttx-bootloader/releases/download/latest/partition-table-esp32s2.bin)
+ESP32-S3 | [bootloader-esp32s3.bin](https://github.com/espressif/esp-nuttx-bootloader/releases/download/latest/bootloader-esp32s3.bin) | [partition-table-esp32s3.bin](https://github.com/espressif/esp-nuttx-bootloader/releases/download/latest/partition-table-esp32s3.bin)
 ESP32-C3 | [bootloader-esp32c3.bin](https://github.com/espressif/esp-nuttx-bootloader/releases/download/latest/bootloader-esp32c3.bin) | [partition-table-esp32c3.bin](https://github.com/espressif/esp-nuttx-bootloader/releases/download/latest/partition-table-esp32c3.bin)
 
 ## MCUboot bootloader

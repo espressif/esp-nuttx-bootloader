@@ -11,7 +11,7 @@ IDF_PATH="${IDF_PATH:-${SCRIPT_ROOTDIR}/esp-idf}"
 
 set -eo pipefail
 
-supported_targets=("esp32" "esp32s2" "esp32c3")
+supported_targets=("esp32" "esp32s2" "esp32s3" "esp32c3")
 
 usage() {
   echo ""
