@@ -15,7 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Build IDF bootloader and partition table
-        uses: docker://docker.io/espressif/idf:v4.4
+        uses: docker://docker.io/espressif/idf:v4.4.1
         with:
           args: ./build_idfboot.sh -c ${{matrix.targets}}
       - uses: actions/upload-artifact@v2
