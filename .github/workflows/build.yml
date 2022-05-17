@@ -13,12 +13,12 @@ jobs:
       matrix:
         targets: [esp32, esp32s2, esp32s3, esp32c3]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Build IDF bootloader and partition table
         uses: docker://docker.io/espressif/idf:v4.4.1
         with:
           args: ./build_idfboot.sh -c ${{matrix.targets}}
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: idf-builds
           path: out/
@@ -29,12 +29,12 @@ jobs:
       matrix:
         targets: [esp32, esp32s2, esp32c3]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Build MCUboot bootloader
         uses: docker://docker.io/espressif/idf:release-v4.4
         with:
           args: ./build_mcuboot.sh -s -c ${{matrix.targets}}
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: mcuboot-builds
           path: out/
@@ -44,7 +44,7 @@ jobs:
     needs: [IDFboot, MCUboot]
     steps:
       - name: Download artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           path: buildartifacts/
       - name: Update release
