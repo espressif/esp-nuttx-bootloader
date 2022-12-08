@@ -27,6 +27,7 @@ Chip | Bootloader
 -----|------------
 ESP32 | [mcuboot-esp32.bin](https://github.com/espressif/esp-nuttx-bootloader/releases/download/latest/mcuboot-esp32.bin)
 ESP32-S2 | [mcuboot-esp32s2.bin](https://github.com/espressif/esp-nuttx-bootloader/releases/download/latest/mcuboot-esp32s2.bin)
+ESP32-S3 | [mcuboot-esp32s3.bin](https://github.com/espressif/esp-nuttx-bootloader/releases/download/latest/mcuboot-esp32s3.bin)
 ESP32-C3 | [mcuboot-esp32c3.bin](https://github.com/espressif/esp-nuttx-bootloader/releases/download/latest/mcuboot-esp32c3.bin)
 
 The prebuilt bootloader image considers the following default partitioning of the chip's SPI Flash for the application slots:
