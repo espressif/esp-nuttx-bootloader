@@ -51,16 +51,17 @@ build_idfboot() {
 
   # Try parsing Flash Size and Partition Table offset values from the sdkconfig
   # file.
-  # If not found, let's assume some commonplace values.
+  # If found, pass them to the Partition Table generator script. Otherwise, the
+  # script will assume default values.
 
   idfboot_partoffset=$(sed -n 's/^CONFIG_PARTITION_TABLE_OFFSET=//p' "${idfboot_config}")
-  if [ -z "${idfboot_partoffset}" ]; then
-    idfboot_partoffset="0x8000"
+  if [ -n "${idfboot_partoffset}" ]; then
+    idfboot_partoffset="--offset ${idfboot_partoffset}"
   fi
 
   idfboot_flashsize=$(sed -n 's/^CONFIG_ESPTOOLPY_FLASHSIZE_\(.*\)MB=y/\1MB/p' "${idfboot_config}")
-  if [ -z "${idfboot_flashsize}" ]; then
-    idfboot_flashsize="4MB"
+  if [ -n "${idfboot_flashsize}" ]; then
+    idfboot_flashsize="--flash-size ${idfboot_flashsize}"
   fi
 
   pushd "${SCRIPT_ROOTDIR}" &>/dev/null
@@ -91,10 +92,11 @@ build_idfboot() {
   cp "${build_dir}"/bootloader.bin "${output_dir}"/bootloader-"${target}".bin
 
   # Generate partition table binary file
+  # shellcheck disable=SC2086 # Intentionally split words from variables
 
   python "${IDF_PATH}"/components/partition_table/gen_esp32part.py \
-         --offset "${idfboot_partoffset}"                          \
-         --flash-size "${idfboot_flashsize}"                       \
+         ${idfboot_partoffset}                                     \
+         ${idfboot_flashsize}                                      \
          "${idfboot_partinfo}"                                     \
          "${output_dir}"/partition-table-"${target}".bin
 
