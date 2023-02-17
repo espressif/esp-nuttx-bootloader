@@ -19,7 +19,10 @@ Chip | Bootloader | Partition table
 ESP32 | [bootloader-esp32.bin](https://github.com/espressif/esp-nuttx-bootloader/releases/download/latest/bootloader-esp32.bin) | [partition-table-esp32.bin](https://github.com/espressif/esp-nuttx-bootloader/releases/download/latest/partition-table-esp32.bin)
 ESP32-S2 | [bootloader-esp32s2.bin](https://github.com/espressif/esp-nuttx-bootloader/releases/download/latest/bootloader-esp32s2.bin) | [partition-table-esp32s2.bin](https://github.com/espressif/esp-nuttx-bootloader/releases/download/latest/partition-table-esp32s2.bin)
 ESP32-S3 | [bootloader-esp32s3.bin](https://github.com/espressif/esp-nuttx-bootloader/releases/download/latest/bootloader-esp32s3.bin) | [partition-table-esp32s3.bin](https://github.com/espressif/esp-nuttx-bootloader/releases/download/latest/partition-table-esp32s3.bin)
+ESP32-C2 | [bootloader-esp32c2.bin](https://github.com/espressif/esp-nuttx-bootloader/releases/download/latest/bootloader-esp32c2.bin) | [partition-table-esp32c2.bin](https://github.com/espressif/esp-nuttx-bootloader/releases/download/latest/partition-table-esp32c2.bin)
 ESP32-C3 | [bootloader-esp32c3.bin](https://github.com/espressif/esp-nuttx-bootloader/releases/download/latest/bootloader-esp32c3.bin) | [partition-table-esp32c3.bin](https://github.com/espressif/esp-nuttx-bootloader/releases/download/latest/partition-table-esp32c3.bin)
+ESP32-C6 | [bootloader-esp32c6.bin](https://github.com/espressif/esp-nuttx-bootloader/releases/download/latest/bootloader-esp32c6.bin) | [partition-table-esp32c6.bin](https://github.com/espressif/esp-nuttx-bootloader/releases/download/latest/partition-table-esp32c6.bin)
+ESP32-H2 | [bootloader-esp32h2.bin](https://github.com/espressif/esp-nuttx-bootloader/releases/download/latest/bootloader-esp32h2.bin) | [partition-table-esp32h2.bin](https://github.com/espressif/esp-nuttx-bootloader/releases/download/latest/partition-table-esp32h2.bin)
 
 ## MCUboot bootloader
 
@@ -56,7 +59,7 @@ Next, follow the instructions according to the bootloader choice.
 It is recommended to build the binaries inside the `espressif/idf` Docker image.
 
 ```bash
-docker run --rm --user $(id -u):$(id -g) -v $PWD:/work -w /work espressif/idf:release-v4.3 ./build_idfboot.sh -c <chip>
+docker run --rm --user $(id -u):$(id -g) -v $PWD:/work -w /work espressif/idf:latest ./build_idfboot.sh -c <chip>
 ```
 
 The binaries will be inside `out` directory.

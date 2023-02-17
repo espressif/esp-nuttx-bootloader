@@ -11,7 +11,7 @@ IDF_PATH="${IDF_PATH:-${SCRIPT_ROOTDIR}/esp-idf}"
 
 set -eo pipefail
 
-supported_targets=("esp32" "esp32s2" "esp32s3" "esp32c3")
+supported_targets=("esp32" "esp32s2" "esp32s3" "esp32c2" "esp32c3" "esp32c6" "esp32h2")
 
 usage() {
   echo ""
@@ -40,13 +40,20 @@ build_idfboot() {
   local source_dir="${IDF_PATH}/components/bootloader/subproject"
   local output_dir="${SCRIPT_ROOTDIR}/out"
   local toolchain_file="${IDF_PATH}/tools/cmake/toolchain-${target}.cmake"
+  local sdkconfig_defaults="${SCRIPT_ROOTDIR}/sdkconfig.defaults"
   local idfboot_config
   local idfboot_partinfo
   local idfboot_partoffset
   local idfboot_flashsize
   local make_generator
 
-  idfboot_config=$(realpath "${config:-${SCRIPT_ROOTDIR}/sdkconfig.defaults}")
+  # Prioritize a chip-specific configuration for IDF if one exists.
+
+  if [ -f "${sdkconfig_defaults}.${target}" ]; then
+    sdkconfig_defaults="${sdkconfig_defaults}.${target}"
+  fi
+
+  idfboot_config=$(realpath "${config:-${sdkconfig_defaults}}")
   idfboot_partinfo=$(realpath "${partinfo:-${SCRIPT_ROOTDIR}/partitions.csv}")
 
   # Try parsing Flash Size and Partition Table offset values from the sdkconfig
