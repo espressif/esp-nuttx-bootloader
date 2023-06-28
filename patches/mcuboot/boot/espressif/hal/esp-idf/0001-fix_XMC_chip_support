@@ -1,0 +1,12 @@
+diff --git a/components/bootloader_support/src/bootloader_flash.c b/components/bootloader_support/src/bootloader_flash.c
+index 8ed1726e67..8e61654ece 100644
+--- a/components/bootloader_support/src/bootloader_flash.c
++++ b/components/bootloader_support/src/bootloader_flash.c
+@@ -10,6 +10,7 @@
+ #include <esp_flash_encrypt.h>
+ #include "sdkconfig.h"
+ #include "soc/soc_caps.h"
++#include "esp_rom_sys.h"
+ 
+ #if CONFIG_IDF_TARGET_ESP32
+ #   include "soc/spi_struct.h"

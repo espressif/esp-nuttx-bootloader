@@ -83,15 +83,19 @@ First of all, make sure the MCUboot repository and its dependencies are up-to-da
 git submodule update --init mcuboot
 cd mcuboot
 git submodule update --init --recursive ext/mbedtls
+cd ../
 ```
 
 It is recommended to build the binaries inside the `espressif/idf` Docker image.
 
 ```bash
-docker run --rm --user $(id -u):$(id -g) -v $PWD:/work -w /work espressif/idf:release-v4.3 ./build_mcuboot.sh -c <chip>
+docker run --rm --user $(id -u):$(id -g) -v $PWD:/work -w /work espressif/idf:v4.4 /bin/sh -c "unset IDF_PATH && ./build_mcuboot.sh -c <chip>"
 ```
 
 The binaries will be inside `out` directory.
+
+> **Note**
+> The environment variable `IDF_PATH` refers to ESP-IDF folder that would be used to retrieve the sources for building the application. Please ensure that `IDF_PATH` isn't set while building MCU Boot: this will use the submodule at `mcuboot/boot/espressif/hal/esp-idf` which is patched to successfully build MCU Boot binaries.
 
 ### Modifying the application slots attributes
 

@@ -84,6 +84,11 @@ build_mcuboot() {
     make_generator="-GNinja"
   fi
 
+  # Apply patches on `IDF_PATH`
+
+  git -C ${IDF_PATH} reset --hard
+  git -C ${IDF_PATH} apply ${SCRIPT_ROOTDIR}/patches/mcuboot/boot/espressif/hal/esp-idf/*
+
   # Build bootloader for selected target
 
   cd "${MCUBOOT_ROOTDIR}" &>/dev/null
