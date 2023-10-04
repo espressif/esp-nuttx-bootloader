@@ -1,4 +1,6 @@
-[![Build Status](https://github.com/espressif/esp-nuttx-bootloader/workflows/build/badge.svg)](https://github.com/espressif/esp-nuttx-bootloader/actions?query=branch%3Amain)
+# Deprecation Notice
+
+This repository will no longer receive any updates. The sources necessary to build NuttX bootloaders are now available at [esp-hal-3rdparty](https://github.com/espressif/esp-hal-3rdparty).
 
 # Bootloader for NuttX
 
